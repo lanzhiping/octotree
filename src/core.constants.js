@@ -39,5 +39,6 @@ const EVENT = {
   OPTS_CHANGE: 'octotree:change',
   VIEW_READY: 'octotree:ready',
   VIEW_CLOSE: 'octotree:close',
-  FETCH_ERROR: 'octotree:error'
+  FETCH_ERROR: 'octotree:error',
+  FORCE_RELOAD: 'octotree:reload'
 };

@@ -4,7 +4,10 @@ class PjaxAdapter extends Adapter {
 
     $(document)
       .on('pjax:start', () => $(document).trigger(EVENT.REQ_START))
-      .on('pjax:end', () => $(document).trigger(EVENT.REQ_END))
+      .on('pjax:end', () => {
+        $(document).trigger(EVENT.REQ_END);
+        $(document).trigger(EVENT.FORCE_RELOAD);
+      })
       .on('pjax:timeout', (e) => e.preventDefault());
   }
 

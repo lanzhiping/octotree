@@ -1,4 +1,4 @@
-$(document).ready(() => {
+const start = (() => {
   const store = new Storage();
 
   parallel(Object.keys(STORE), (key, cb) => store.setIfNull(STORE[key], DEFAULTS[key], cb), loadExtension);
@@ -46,7 +46,13 @@ $(document).ready(() => {
       .on(EVENT.REQ_END, () => $toggler.removeClass('octotree_loading'))
       .on(EVENT.LAYOUT_CHANGE, layoutChanged)
       .on(EVENT.TOGGLE, layoutChanged)
-      .on(EVENT.LOC_CHANGE, () => tryLoadRepo());
+      .on(EVENT.LOC_CHANGE, () => tryLoadRepo())
+      .on(EVENT.FORCE_RELOAD, () => {
+        waitElementDisappeared('#files include-fragment.diff-progressive-loader')
+          .then(() => {
+            tryLoadRepo(true);
+          });
+      });
 
     $sidebar
       .width(parseInt(store.get(STORE.WIDTH)))
@@ -203,3 +209,28 @@ $(document).ready(() => {
     }
   }
 });
+
+function waitElementDisappeared(selector) {
+  return new Promise((resolve) => {
+      if (!document.querySelector(selector)) {
+          return resolve();
+      }
+
+      const observer = new MutationObserver(() => {
+          if (!document.querySelector(selector)) {
+              resolve();
+              observer.disconnect();
+          }
+      });
+
+      observer.observe(document.body, {
+          childList: true,
+          subtree: true
+      });
+  });
+}
+
+waitElementDisappeared('#files include-fragment.diff-progressive-loader')
+  .then(() => {
+    start();
+  });

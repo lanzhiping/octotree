@@ -382,6 +382,22 @@ class Adapter {
    * @api protected
    */
   _getPatchHref(repo, patch) {
-    return `/${repo.username}/${repo.reponame}/pull/${repo.pullNumber}/files#diff-${patch.diffId}`;
+    if (this._diffMap === undefined || Object.keys(this._diffMap).length === 0) {
+      this._diffMap = this._initDiffMap();
+    }
+    return `/${repo.username}/${repo.reponame}/pull/${repo.pullNumber}/files#${this._diffMap[patch.filename]}`;
+  }
+
+  _initDiffMap() {
+    const fileElements = Array.from(document.querySelectorAll('.file-header'));
+
+    const diffMap = fileElements.reduce((map, fileElement) => {
+      const filePath = fileElement.getAttribute('data-path');
+      const fileAnchor = fileElement.getAttribute('data-anchor');
+
+      return Object.assign({[filePath]: fileAnchor}, map);
+    }, {});
+
+    return diffMap;
   }
 }
